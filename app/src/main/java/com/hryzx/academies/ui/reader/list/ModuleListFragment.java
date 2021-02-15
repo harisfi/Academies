@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -18,6 +19,7 @@ import com.hryzx.academies.data.ModuleEntity;
 import com.hryzx.academies.databinding.FragmentModuleListBinding;
 import com.hryzx.academies.ui.reader.CourseReaderActivity;
 import com.hryzx.academies.ui.reader.CourseReaderCallback;
+import com.hryzx.academies.ui.reader.CourseReaderViewModel;
 import com.hryzx.academies.utils.DataDummy;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import java.util.List;
 public class ModuleListFragment extends Fragment implements MyAdapterClickListener{
 
     public static final String TAG = ModuleListFragment.class.getSimpleName();
+    private CourseReaderViewModel viewModel;
 
     private FragmentModuleListBinding fragmentModuleListBinding;
     private ModuleListAdapter adapter;
@@ -54,8 +57,10 @@ public class ModuleListFragment extends Fragment implements MyAdapterClickListen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
+            viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
             adapter = new ModuleListAdapter(this);
-            populateRecyclerView(DataDummy.generateDummyModules("a14"));
+            populateRecyclerView(viewModel.getModules());
+//            populateRecyclerView(DataDummy.generateDummyModules("a14"));
         }
     }
 
@@ -68,6 +73,7 @@ public class ModuleListFragment extends Fragment implements MyAdapterClickListen
     @Override
     public void onItemClicked(int position, String moduleId) {
         courseReaderCallback.moveTo(position, moduleId);
+        viewModel.setSelectedModule(moduleId);
     }
 
     private void populateRecyclerView(List<ModuleEntity> modules) {

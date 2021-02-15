@@ -18,6 +18,7 @@ import com.hryzx.academies.utils.DataDummy;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -43,19 +44,24 @@ public class DetailCourseActivity extends AppCompatActivity {
 
         DetailCourseAdapter adapter = new DetailCourseAdapter();
 
+        DetailCourseViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(DetailCourseViewModel.class);
+
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String courseId = extras.getString(EXTRA_COURSE);
             if (courseId != null) {
-                List<ModuleEntity> modules = DataDummy.generateDummyModules(courseId);
+                viewModel.setSelectedCourse(courseId);
+//                List<ModuleEntity> modules = DataDummy.generateDummyModules(courseId);
+                List<ModuleEntity> modules = viewModel.getModules();
                 adapter.setModules(modules);
 
-                for (int i = 0; i < DataDummy.generateDummyCourses().size(); i++) {
+                populateCourse(viewModel.getCourse());
+                /*for (int i = 0; i < DataDummy.generateDummyCourses().size(); i++) {
                     CourseEntity courseEntity = DataDummy.generateDummyCourses().get(i);
                     if (courseEntity.getCourseId().equals(courseId)) {
                         populateCourse(courseEntity);
                     }
-                }
+                }*/
             }
         }
 
