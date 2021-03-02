@@ -16,6 +16,7 @@ import com.hryzx.academies.R;
 import com.hryzx.academies.data.CourseEntity;
 import com.hryzx.academies.databinding.FragmentAcademyBinding;
 import com.hryzx.academies.utils.DataDummy;
+import com.hryzx.academies.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
@@ -43,7 +44,9 @@ public class AcademyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-            AcademyViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(AcademyViewModel.class);
+//            AcademyViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(AcademyViewModel.class);
+            ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
+            AcademyViewModel viewModel = new ViewModelProvider(this, factory).get(AcademyViewModel.class);
             List<CourseEntity> courses = viewModel.getCourses();
 
 //            List<CourseEntity> courses = DataDummy.generateDummyCourses();

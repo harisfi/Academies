@@ -10,6 +10,7 @@ import android.os.Bundle;
 import com.hryzx.academies.R;
 import com.hryzx.academies.ui.reader.content.ModuleContentFragment;
 import com.hryzx.academies.ui.reader.list.ModuleListFragment;
+import com.hryzx.academies.viewmodel.ViewModelFactory;
 
 public class CourseReaderActivity extends AppCompatActivity implements CourseReaderCallback{
 
@@ -20,7 +21,9 @@ public class CourseReaderActivity extends AppCompatActivity implements CourseRea
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_reader);
 
-        CourseReaderViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
+//        CourseReaderViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
+        ViewModelFactory factory = ViewModelFactory.getInstance(this);
+        CourseReaderViewModel viewModel = new ViewModelProvider(this, factory).get(CourseReaderViewModel.class);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {

@@ -21,6 +21,7 @@ import com.hryzx.academies.ui.reader.CourseReaderActivity;
 import com.hryzx.academies.ui.reader.CourseReaderCallback;
 import com.hryzx.academies.ui.reader.CourseReaderViewModel;
 import com.hryzx.academies.utils.DataDummy;
+import com.hryzx.academies.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
@@ -57,7 +58,10 @@ public class ModuleListFragment extends Fragment implements MyAdapterClickListen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-            viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
+//            viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
+            ViewModelFactory factory = ViewModelFactory.getInstance(requireActivity());
+            viewModel = new ViewModelProvider(requireActivity(), factory).get(CourseReaderViewModel.class);
+
             adapter = new ModuleListAdapter(this);
             populateRecyclerView(viewModel.getModules());
 //            populateRecyclerView(DataDummy.generateDummyModules("a14"));

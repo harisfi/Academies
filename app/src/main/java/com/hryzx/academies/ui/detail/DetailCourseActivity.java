@@ -15,6 +15,7 @@ import com.hryzx.academies.databinding.ActivityDetailCourseBinding;
 import com.hryzx.academies.databinding.ContentDetailCourseBinding;
 import com.hryzx.academies.ui.reader.CourseReaderActivity;
 import com.hryzx.academies.utils.DataDummy;
+import com.hryzx.academies.viewmodel.ViewModelFactory;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -44,7 +45,9 @@ public class DetailCourseActivity extends AppCompatActivity {
 
         DetailCourseAdapter adapter = new DetailCourseAdapter();
 
-        DetailCourseViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(DetailCourseViewModel.class);
+//        DetailCourseViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(DetailCourseViewModel.class);
+        ViewModelFactory factory = ViewModelFactory.getInstance(this);
+        DetailCourseViewModel viewModel = new ViewModelProvider(this, factory).get(DetailCourseViewModel.class);
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {

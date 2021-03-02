@@ -17,6 +17,7 @@ import com.hryzx.academies.R;
 import com.hryzx.academies.data.CourseEntity;
 import com.hryzx.academies.databinding.FragmentBookmarkBinding;
 import com.hryzx.academies.utils.DataDummy;
+import com.hryzx.academies.viewmodel.ViewModelFactory;
 
 import java.util.List;
 
@@ -44,7 +45,9 @@ public class BookmarkFragment extends Fragment implements BookmarkFragmentCallba
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-            BookmarkViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(BookmarkViewModel.class);
+//            BookmarkViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(BookmarkViewModel.class);
+            ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
+            BookmarkViewModel viewModel = new ViewModelProvider(this, factory).get(BookmarkViewModel.class);
             List<CourseEntity> courses = viewModel.getBookmarks();
 
 //            List<CourseEntity> courses = DataDummy.generateDummyCourses();
