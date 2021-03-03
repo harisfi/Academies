@@ -1,21 +1,31 @@
 package com.hryzx.academies.data;
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
+
 import com.hryzx.academies.data.source.remote.RemoteDataSource;
 import com.hryzx.academies.data.source.remote.response.ContentResponse;
 import com.hryzx.academies.data.source.remote.response.CourseResponse;
 import com.hryzx.academies.data.source.remote.response.ModuleResponse;
 import com.hryzx.academies.utils.DataDummy;
+import com.hryzx.academies.utils.LiveDataTestUtil;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class AcademyRepositoryTest {
+    @Rule
+    public InstantTaskExecutorRule instantTaskExecutorRule = new InstantTaskExecutorRule();
+
     private RemoteDataSource remote = Mockito.mock(RemoteDataSource.class);
     private FakeAcademyRepository academyRepository = new FakeAcademyRepository(remote);
 
@@ -27,47 +37,90 @@ public class AcademyRepositoryTest {
 
     @Test
     public void getAllCourses() {
-        when(remote.getAllCourses()).thenReturn(courseResponses);
-        List<CourseEntity> courseEntities = academyRepository.getAllCourses();
-        verify(remote).getAllCourses();
+        doAnswer(invocation -> {
+            ((RemoteDataSource.LoadCoursesCallback) invocation.getArguments()[0])
+                    .onAllCoursesReceived(courseResponses);
+            return null;
+        }).when(remote).getAllCourses(any(RemoteDataSource.LoadCoursesCallback.class));
+        List<CourseEntity> courseEntities = LiveDataTestUtil.getValue(academyRepository.getAllCourses());
+        verify(remote).getAllCourses(any(RemoteDataSource.LoadCoursesCallback.class));
         assertNotNull(courseEntities);
         assertEquals(courseResponses.size(), courseEntities.size());
     }
 
     @Test
     public void getAllModulesByCourse() {
-        when(remote.getModules(courseId)).thenReturn(moduleResponses);
-        List<ModuleEntity> moduleEntities = academyRepository.getAllModulesByCourse(courseId);
-        verify(remote).getModules(courseId);
-        assertNotNull(moduleEntities);
-        assertEquals(moduleResponses.size(), moduleEntities.size());
+        doAnswer(invocation -> {
+            ((RemoteDataSource.LoadModulesCallback) invocation.getArguments()[1])
+                    .onAllModulesReceived(moduleResponses);
+            return null;
+        }).when(remote).getModules(eq(courseId), any(RemoteDataSource.LoadModulesCallback.class));
+
+        List<ModuleEntity> courseEntities = LiveDataTestUtil.getValue(academyRepository.getAllModulesByCourse(courseId));
+
+        verify(remote).getModules(eq(courseId), any(RemoteDataSource.LoadModulesCallback.class));
+
+        assertNotNull(courseEntities);
+        assertEquals(moduleResponses.size(), courseEntities.size());
     }
 
     @Test
     public void getBookmarkedCourses() {
-        when(remote.getAllCourses()).thenReturn(courseResponses);
-        List<CourseEntity> courseEntities = academyRepository.getBookmarkedCourses();
-        verify(remote).getAllCourses();
+        doAnswer(invocation -> {
+            ((RemoteDataSource.LoadCoursesCallback) invocation.getArguments()[0])
+                    .onAllCoursesReceived(courseResponses);
+            return null;
+        }).when(remote).getAllCourses(any(RemoteDataSource.LoadCoursesCallback.class));
+
+        List<CourseEntity> courseEntities = LiveDataTestUtil.getValue(academyRepository.getBookmarkedCourses());
+
+        verify(remote).getAllCourses(any(RemoteDataSource.LoadCoursesCallback.class));
+
         assertNotNull(courseEntities);
         assertEquals(courseResponses.size(), courseEntities.size());
     }
 
     @Test
     public void getContent() {
-        when(remote.getModules(courseId)).thenReturn(moduleResponses);
-        when(remote.getContent(moduleId)).thenReturn(content);
-        ModuleEntity resultModule = academyRepository.getContent(courseId, moduleId);
-        verify(remote).getContent(moduleId);
-        assertNotNull(resultModule);
-        assertEquals(content.getContent(), resultModule.contentEntity.getContent());
+        doAnswer(invocation -> {
+            ((RemoteDataSource.LoadModulesCallback) invocation.getArguments()[1])
+                    .onAllModulesReceived(moduleResponses);
+            return null;
+        }).when(remote).getModules(eq(courseId), any(RemoteDataSource.LoadModulesCallback.class));
+
+        doAnswer(invocation -> {
+            ((RemoteDataSource.LoadContentCallback) invocation.getArguments()[1])
+                    .onContentReceived(content);
+            return null;
+        }).when(remote).getContent(eq(moduleId), any(RemoteDataSource.LoadContentCallback.class));
+
+        ModuleEntity courseEntitiesContent = LiveDataTestUtil.getValue(academyRepository.getContent(courseId, moduleId));
+
+        verify(remote).getModules(eq(courseId), any(RemoteDataSource.LoadModulesCallback.class));
+
+        verify(remote).getContent(eq(moduleId), any(RemoteDataSource.LoadContentCallback.class));
+
+        assertNotNull(courseEntitiesContent);
+        assertNotNull(courseEntitiesContent.contentEntity);
+        assertNotNull(courseEntitiesContent.contentEntity.getContent());
+        assertEquals(content.getContent(), courseEntitiesContent.contentEntity.getContent());
     }
+
 
     @Test
     public void getCourseWithModules() {
-        when(remote.getAllCourses()).thenReturn(courseResponses);
-        CourseEntity resultCourse = academyRepository.getCourseWithModules(courseId);
-        verify(remote).getAllCourses();
-        assertNotNull(resultCourse);
-        assertEquals(courseResponses.get(0).getTitle(), resultCourse.getTitle());
+        doAnswer(invocation -> {
+            ((RemoteDataSource.LoadCoursesCallback) invocation.getArguments()[0])
+                    .onAllCoursesReceived(courseResponses);
+            return null;
+        }).when(remote).getAllCourses(any(RemoteDataSource.LoadCoursesCallback.class));
+
+        CourseEntity courseEntities = LiveDataTestUtil.getValue(academyRepository.getCourseWithModules(courseId));
+
+        verify(remote).getAllCourses(any(RemoteDataSource.LoadCoursesCallback.class));
+
+        assertNotNull(courseEntities);
+        assertNotNull(courseEntities.getTitle());
+        assertEquals(courseResponses.get(0).getTitle(), courseEntities.getTitle());
     }
 }
