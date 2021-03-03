@@ -1,12 +1,15 @@
 package com.hryzx.academies.ui.home;
 
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import com.hryzx.academies.R;
 import com.hryzx.academies.data.CourseEntity;
 import com.hryzx.academies.utils.DataDummy;
+import com.hryzx.academies.utils.EspressoIdlingResource;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,6 +30,12 @@ public class HomeActivityTest {
     @Before
     public void setup(){
         ActivityScenario.launch(HomeActivity.class);
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.getEspressoIdlingResource());
+    }
+
+    @After
+    public void tearDown() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.getEspressoIdlingResource());
     }
 
     @Test
