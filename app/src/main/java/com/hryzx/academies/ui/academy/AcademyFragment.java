@@ -44,14 +44,18 @@ public class AcademyFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-//            AcademyViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(AcademyViewModel.class);
             ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
             AcademyViewModel viewModel = new ViewModelProvider(this, factory).get(AcademyViewModel.class);
-            List<CourseEntity> courses = viewModel.getCourses();
 
-//            List<CourseEntity> courses = DataDummy.generateDummyCourses();
             AcademyAdapter academyAdapter = new AcademyAdapter();
-            academyAdapter.setCourses(courses);
+            fragmentAcademyBinding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getCourses().observe(getViewLifecycleOwner(), courses -> {
+                        fragmentAcademyBinding.progressBar.setVisibility(View.GONE);
+                        academyAdapter.setCourses(courses);
+                        academyAdapter.notifyDataSetChanged();
+                    }
+            );
+
             fragmentAcademyBinding.rvAcademy.setLayoutManager(new LinearLayoutManager(getContext()));
             fragmentAcademyBinding.rvAcademy.setHasFixedSize(true);
             fragmentAcademyBinding.rvAcademy.setAdapter(academyAdapter);

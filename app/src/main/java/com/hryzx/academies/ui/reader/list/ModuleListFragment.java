@@ -58,13 +58,15 @@ public class ModuleListFragment extends Fragment implements MyAdapterClickListen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-//            viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
             ViewModelFactory factory = ViewModelFactory.getInstance(requireActivity());
             viewModel = new ViewModelProvider(requireActivity(), factory).get(CourseReaderViewModel.class);
 
             adapter = new ModuleListAdapter(this);
-            populateRecyclerView(viewModel.getModules());
-//            populateRecyclerView(DataDummy.generateDummyModules("a14"));
+            fragmentModuleListBinding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getModules().observe(getViewLifecycleOwner(), modules -> {
+                fragmentModuleListBinding.progressBar.setVisibility(View.GONE);
+                populateRecyclerView(modules);
+            });
         }
     }
 

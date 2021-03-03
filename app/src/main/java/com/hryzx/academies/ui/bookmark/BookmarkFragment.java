@@ -45,14 +45,17 @@ public class BookmarkFragment extends Fragment implements BookmarkFragmentCallba
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-//            BookmarkViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(BookmarkViewModel.class);
             ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
             BookmarkViewModel viewModel = new ViewModelProvider(this, factory).get(BookmarkViewModel.class);
-            List<CourseEntity> courses = viewModel.getBookmarks();
 
-//            List<CourseEntity> courses = DataDummy.generateDummyCourses();
             BookmarkAdapter adapter = new BookmarkAdapter(this);
-            adapter.setCourses(courses);
+            fragmentBookmarkBinding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getBookmarks().observe(getViewLifecycleOwner(), courses -> {
+                fragmentBookmarkBinding.progressBar.setVisibility(View.GONE);
+                adapter.setCourses(courses);
+                adapter.notifyDataSetChanged();
+            });
+
             fragmentBookmarkBinding.rvBookmark.setLayoutManager(new LinearLayoutManager(getContext()));
             fragmentBookmarkBinding.rvBookmark.setHasFixedSize(true);
             fragmentBookmarkBinding.rvBookmark.setAdapter(adapter);

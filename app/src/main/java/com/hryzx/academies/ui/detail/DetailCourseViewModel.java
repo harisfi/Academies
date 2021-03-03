@@ -1,5 +1,6 @@
 package com.hryzx.academies.ui.detail;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hryzx.academies.data.CourseEntity;
@@ -21,11 +22,11 @@ public class DetailCourseViewModel extends ViewModel {
         this.courseId = courseId;
     }
 
-    public CourseEntity getCourse() {
+    public LiveData<CourseEntity> getCourse() {
         return academyRepository.getCourseWithModules(courseId);
     }
 
-    public List<ModuleEntity> getModules() {
+    public LiveData<List<ModuleEntity>> getModules() {
         return academyRepository.getAllModulesByCourse(courseId);
     }
 }

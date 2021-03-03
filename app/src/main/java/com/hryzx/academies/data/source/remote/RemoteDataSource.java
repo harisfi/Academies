@@ -1,5 +1,7 @@
 package com.hryzx.academies.data.source.remote;
 
+import android.os.Handler;
+
 import com.hryzx.academies.data.source.remote.response.ContentResponse;
 import com.hryzx.academies.data.source.remote.response.CourseResponse;
 import com.hryzx.academies.data.source.remote.response.ModuleResponse;
@@ -10,6 +12,8 @@ import java.util.List;
 public class RemoteDataSource {
     private static RemoteDataSource INSTANCE;
     private JsonHelper jsonHelper;
+    private Handler handler = new Handler();
+    private final long SERVICE_LATENCY_IN_MILLIS = 1000;
 
     private RemoteDataSource(JsonHelper jsonHelper) {
         this.jsonHelper = jsonHelper;
@@ -22,15 +26,25 @@ public class RemoteDataSource {
         return INSTANCE;
     }
 
-    public List<CourseResponse> getAllCourses() {
-        return jsonHelper.loadCourses();
+    public void getAllCourses(LoadCoursesCallback callback) {
+        handler.postDelayed(()-> callback.onAllCoursesReceived(jsonHelper.loadCourses()), SERVICE_LATENCY_IN_MILLIS);
     }
 
-    public List<ModuleResponse> getModules(String courseId) {
-        return jsonHelper.loadModule(courseId);
+    public void getModules(String courseId, LoadModulesCallback callback) {
+        handler.postDelayed(()-> callback.onAllModulesReceived(jsonHelper.loadModule(courseId)), SERVICE_LATENCY_IN_MILLIS);
     }
 
-    public ContentResponse getContent(String moduleId) {
-        return jsonHelper.loadContent(moduleId);
+    public void getContent(String moduleId, LoadContentCallback callback) {
+        handler.postDelayed(()-> callback.onContentReceived(jsonHelper.loadContent(moduleId)), SERVICE_LATENCY_IN_MILLIS);
+    }
+
+    public interface LoadCoursesCallback {
+        void onAllCoursesReceived(List<CourseResponse> courseResponses);
+    }
+    public interface LoadModulesCallback {
+        void onAllModulesReceived(List<ModuleResponse> moduleResponses);
+    }
+    public interface LoadContentCallback {
+        void onContentReceived(ContentResponse contentResponse);
     }
 }

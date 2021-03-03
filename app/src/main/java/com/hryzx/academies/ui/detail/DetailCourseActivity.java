@@ -45,7 +45,6 @@ public class DetailCourseActivity extends AppCompatActivity {
 
         DetailCourseAdapter adapter = new DetailCourseAdapter();
 
-//        DetailCourseViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(DetailCourseViewModel.class);
         ViewModelFactory factory = ViewModelFactory.getInstance(this);
         DetailCourseViewModel viewModel = new ViewModelProvider(this, factory).get(DetailCourseViewModel.class);
 
@@ -53,18 +52,17 @@ public class DetailCourseActivity extends AppCompatActivity {
         if (extras != null) {
             String courseId = extras.getString(EXTRA_COURSE);
             if (courseId != null) {
-                viewModel.setSelectedCourse(courseId);
-//                List<ModuleEntity> modules = DataDummy.generateDummyModules(courseId);
-                List<ModuleEntity> modules = viewModel.getModules();
-                adapter.setModules(modules);
+                activityDetailCourseBinding.progressBar.setVisibility(View.VISIBLE);
+                activityDetailCourseBinding.content.setVisibility(View.GONE);
 
-                populateCourse(viewModel.getCourse());
-                /*for (int i = 0; i < DataDummy.generateDummyCourses().size(); i++) {
-                    CourseEntity courseEntity = DataDummy.generateDummyCourses().get(i);
-                    if (courseEntity.getCourseId().equals(courseId)) {
-                        populateCourse(courseEntity);
-                    }
-                }*/
+                viewModel.setSelectedCourse(courseId);
+                viewModel.getModules().observe(this, modules -> {
+                    activityDetailCourseBinding.progressBar.setVisibility(View.GONE);
+                    activityDetailCourseBinding.content.setVisibility(View.VISIBLE);
+                    adapter.setModules(modules);
+                    adapter.notifyDataSetChanged();
+                });
+                viewModel.getCourse().observe(this, this::populateCourse);
             }
         }
 

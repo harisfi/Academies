@@ -1,5 +1,6 @@
 package com.hryzx.academies.ui.reader;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.hryzx.academies.data.ContentEntity;
@@ -27,11 +28,11 @@ public class CourseReaderViewModel extends ViewModel {
         this.moduleId = moduleId;
     }
 
-    public List<ModuleEntity> getModules() {
+    public LiveData<List<ModuleEntity>> getModules() {
         return academyRepository.getAllModulesByCourse(courseId);
     }
 
-    public ModuleEntity getSelectedModule() {
+    public LiveData<ModuleEntity> getSelectedModule() {
         return academyRepository.getContent(courseId, moduleId);
     }
 }
